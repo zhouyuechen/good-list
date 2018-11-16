@@ -7,7 +7,7 @@ href={href}
 className="a-component"
 id={id}
 onClick={handleClick}
-
+required
 >{text}</a>
 </div>
 );

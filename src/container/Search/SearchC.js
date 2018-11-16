@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import '../../style/common/index.js';
 import store from '../../store';
 import {toJS} from 'mobx';
-import Button from 'antd/lib/button';
+
 @observer
 class SearchC extends Component {
     constructor(props) {
@@ -18,8 +18,10 @@ class SearchC extends Component {
             keyword:""
 
         };
-        this.handleChange = this.handleChange.bind(this);
+      this.handleChange = this.handleChange.bind(this);
       this.handleClick = this.handleClick.bind(this);
+			this.handleKeyUp = this.handleKeyUp.bind(this);
+			
     }
     handleChange(event) {
       this.setState({
@@ -27,25 +29,51 @@ class SearchC extends Component {
 			})
     }
 		handleClick(){
+			let word="";
+			
+			if(document.getElementById("input_key").value==""){
+				word=store.SearchRes.pcKeyWord.defaultSearchKey.toString();
+			}else{
+				word=this.state.keyword ;
+			}
+			console.log(word);
 			store.SearchRes.getItems(
 					api.itemSearch,
 					"post",
-					{"pageNo":1,"pageSize":20,"searchkey":`${this.state.keyword }`,"sortType":"3","itemTypes":"","searchSource":"key"},
-					"itemData"
+					{"pageNo":1,"pageSize":20,"searchkey":`${word}`,"sortType":"3","itemTypes":"","searchSource":"key"},
+					word
 			);
 			
 		}
-    handleAClick(){}
-    componentDidMount(){
+    handleAClick(event){
 			
-					store.SearchRes.getData(
-					api.pcKeyWord,
+			const word=event.target.innerText;
+			store.SearchRes.getItems(
+					api.itemSearch,
 					"post",
-					{"source":"pc"},
-					"pcKeyWord"
-					)
-				
-			
+					{"pageNo":1,"pageSize":20,"searchkey":`${word}`,"sortType":"3","itemTypes":"","searchSource":"key"},
+					word
+			);
+			store.SearchRes.changeKeyWord(word)
+		}
+		handleKeyUp(event){
+			if(event.keyCode==13){
+				store.SearchRes.getItems(
+						api.itemSearch,
+						"post",
+						{"pageNo":1,"pageSize":20,"searchkey":`${this.state.keyword }`,"sortType":"3","itemTypes":"","searchSource":"key"},
+						this.state.keyword
+				);
+			}
+		}
+    componentDidMount(){			
+			store.SearchRes.getData(
+			api.pcKeyWord,
+			"post",
+			{"source":"pc"}
+			);
+			 document.getElementById("input_key").addEventListener('keyup', this.handleKeyUp)
+
     }
     render() {
 			
@@ -57,12 +85,16 @@ class SearchC extends Component {
 								text = "姓名"
                 label = "name"
                 type = "text"
-                id = "1"
+                id="input_key"
                 value = { (store.SearchRes.pcKeyWord.defaultSearchKey)||this.state.keyword}
                 handleChange = {
                     this.handleChange
-                }  />
-                     <button  onClick={this.handleClick}  >搜索</button>
+                } 
+								 handleEnter={
+									 this.handleEnter
+								 }
+								 />
+                     <button  id="search_btn" onClick={this.handleClick}  >搜索</button>
 
             </div >
 							<div className="tip flexrb ">
@@ -72,11 +104,11 @@ class SearchC extends Component {
 							 dc={item.isHot?"hot tips":"tips"}
 							 href="javasrcipt:void()"
 							 text={item.name}
-							 onClick={this.handleAClick}
+							 handleClick={this.handleAClick}
 							 ></A>     ))} 
 
 							</div>
-							 <Button type="primary">Button</Button>
+							 
             </div>
         );
     }

@@ -1,15 +1,17 @@
-import { observable, action, toJS,computed,runInAction} from 'mobx';
+import { observable, action, toJS,computed,runInAction,extendObservable ,autorun} from 'mobx';
 
 import * as HR from '@yt/hop-request'
 class SearchRes {
-    @observable itemData = {}
+    // @observable itemData = {}
     @observable list = []
 	  @observable pcKeyWord={}
+		@observable keyWord=""
+		@observable isSearched=false
     @computed get total() {
         return this.list.length;
     }
-    @action change() {
-        this.list.push(this.list.length);
+    @action changeKeyWord(word) {
+        this.pcKeyWord.defaultSearchKey=word
     }
     @action
     async getData(url,method,data,which) {
@@ -25,7 +27,7 @@ class SearchRes {
 
     }
 		  @action
-		    async getItems(url,method,data) {
+		    async getItems(url,method,data,key) {
 		        const result = await HR.request({
 		            url: url, // hop版本号+api,必须以斜杠结尾
 		            method: method, // post(默认) 可选get
@@ -33,11 +35,28 @@ class SearchRes {
 		        })
 						   runInAction(() => {
 							this.itemData=result.data;
-							console.log(toJS(this.itemData));
+							this.isSearched=true;
+							this.keyWord=key;
 							});
 		
 		    }
  
         
 }
-export default new SearchRes()
+
+const bb = new SearchRes();
+
+extendObservable(bb, {
+  itemData: {
+    brandList: [],
+		itemList:[],
+		pageNo:0,
+		pageSize:0,
+		totalCount:0,
+		totalPage:0
+  }
+});
+autorun(() => {
+  console.log(bb.isSearched);
+});
+export default bb
