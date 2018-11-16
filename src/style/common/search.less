@@ -1,0 +1,56 @@
+.search-row{
+	background: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+	padding: 1rem;
+    flex-direction: row;
+		flex-flow: wrap;
+    img{
+        width: 50%;
+        
+    }
+	.s-box{
+		width: 40%;
+		button{
+			&:hover{
+				cursor: pointer;
+			}
+			outline: none;
+			width: 25%;
+			height: 34px;
+			color: white;
+			background: black;
+			border: none;
+		}
+		.s-input{
+			display: inline-block;
+			width: 75%;
+
+			input{
+				outline: none;
+				display: inline-block;
+				width: 100%;
+				height: 32px;
+				border: 1px solid black;
+				padding: 0 10px;}
+					}
+	 
+	}
+	.tip{
+		margin-left:55%;
+		width: 40%;
+		.tips{
+			width: 10%;
+			.a-component{
+				font-size: 12.5px;
+				color: black;
+			}
+		}
+		.tips.hot{
+			.a-component{
+			color: #FF5C5C ;
+		}}
+	}
+}
